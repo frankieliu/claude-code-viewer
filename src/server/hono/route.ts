@@ -166,9 +166,21 @@ export const routes = (app: HonoAppType, options: CliOptions) =>
 
         // routes
         .get("/api/config", async (c) => {
-          return c.json({
-            config: c.get("userConfig"),
-          });
+          try {
+            const userConfig = c.get("userConfig");
+            return c.json({
+              config: userConfig,
+            });
+          } catch (error) {
+            console.error("Error in /api/config:", error);
+            return c.json(
+              {
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+              },
+              500,
+            );
+          }
         })
 
         .put("/api/config", zValidator("json", userConfigSchema), async (c) => {

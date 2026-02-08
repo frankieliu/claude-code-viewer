@@ -10,26 +10,33 @@ import type { HonoContext } from "../app";
 
 export const configMiddleware = createMiddleware<HonoContext>(
   async (c, next) => {
-    const cookie = getCookie(c, "ccv-config");
-    const parsed = parseUserConfig(cookie);
+    try {
+      const cookie = getCookie(c, "ccv-config");
+      const parsed = parseUserConfig(cookie);
 
-    if (cookie === undefined) {
-      const preferredLocale =
-        detectLocaleFromAcceptLanguage(c.req.header("accept-language")) ??
-        DEFAULT_LOCALE;
+      if (cookie === undefined) {
+        const preferredLocale =
+          detectLocaleFromAcceptLanguage(c.req.header("accept-language")) ??
+          DEFAULT_LOCALE;
 
-      setCookie(
-        c,
-        "ccv-config",
-        JSON.stringify({
-          ...defaultUserConfig,
-          locale: preferredLocale,
-        } satisfies UserConfig),
-      );
+        setCookie(
+          c,
+          "ccv-config",
+          JSON.stringify({
+            ...defaultUserConfig,
+            locale: preferredLocale,
+          } satisfies UserConfig),
+        );
+      }
+
+      c.set("userConfig", parsed);
+
+      await next();
+    } catch (error) {
+      console.error("Error in configMiddleware:", error);
+      // Set default config on error
+      c.set("userConfig", defaultUserConfig);
+      await next();
     }
-
-    c.set("userConfig", parsed);
-
-    await next();
   },
 );
