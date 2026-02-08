@@ -10,7 +10,6 @@
 **NEVER**:
 - Use `as` type casting in ANY context including test code (explain the problem to the user instead)
 - Use raw `fetch` or bypass TanStack Query for API calls
-- Run `pnpm dev` or `pnpm start` (dev servers)
 - Use `node:fs`, `node:path`, etc. directly (use Effect-TS equivalents)
 
 **ALWAYS**:
