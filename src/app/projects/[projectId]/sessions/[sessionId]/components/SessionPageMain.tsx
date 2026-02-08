@@ -19,6 +19,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { toast } from "sonner";
 import { PermissionDialog } from "@/components/PermissionDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -196,6 +197,16 @@ const SessionPageMainContent: FC<
     }
   };
 
+  const handleCopySessionPath = async () => {
+    if (!sessionData?.session.jsonlFilePath) return;
+    try {
+      await navigator.clipboard.writeText(sessionData.session.jsonlFilePath);
+      toast.success("Session file path copied to clipboard");
+    } catch (_error) {
+      toast.error("Failed to copy session file path");
+    }
+  };
+
   const sessionTitle =
     sessionData?.session.meta.firstUserMessage != null
       ? firstUserMessageToTitle(sessionData.session.meta.firstUserMessage)
@@ -321,6 +332,7 @@ const SessionPageMainContent: FC<
                   size="icon"
                   className="flex-shrink-0 h-6 w-6"
                   aria-label="Session metadata"
+                  onClick={handleCopySessionPath}
                 >
                   <InfoIcon className="w-3.5 h-3.5" />
                 </Button>
